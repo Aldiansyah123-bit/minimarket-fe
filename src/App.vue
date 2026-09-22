@@ -62,10 +62,8 @@
         <div class="page-content">
           <DashboardPage v-if="currentPage === 'dashboard'" />
           <POSPage v-else-if="currentPage === 'pos-new'" />
-          <div v-else class="placeholder-page">
-            <h2>{{ currentPageLabel }}</h2>
-            <p>Halaman ini sedang dalam pengembangan</p>
-          </div>
+          <ProductsPage v-else-if="currentPage === 'products-all'" />
+          <AllPages v-else />
         </div>
       </div>
     </div>
@@ -76,13 +74,17 @@
 import LoginPage from './views/LoginPage.vue'
 import DashboardPage from './views/DashboardPage.vue'
 import POSPage from './views/POSPage.vue'
+import ProductsPage from './views/ProductsPage.vue'
+import AllPages from './views/AllPages.vue'
 
 export default {
   name: 'App',
   components: {
     LoginPage,
     DashboardPage,
-    POSPage
+    POSPage,
+    ProductsPage,
+    AllPages
   },
   computed: {
     currentUser() { return this.$store.state.currentUser },
