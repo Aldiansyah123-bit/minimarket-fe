@@ -11,10 +11,10 @@ export default new Vuex.Store({
     sidebarCollapsed: false,
     expandedMenus: ['pos'],
     users: [
-      { id: 'u1', username: 'admin', password: 'admin123', name: 'Administrator', role: 'administrator', active: true },
-      { id: 'u2', username: 'owner', password: 'owner123', name: 'Budi Santoso', role: 'owner', active: true },
-      { id: 'u3', username: 'manager', password: 'manager123', name: 'Siti Rahayu', role: 'manager', active: true },
-      { id: 'u4', username: 'kasir1', password: 'kasir123', name: 'Aldi Pratama', role: 'cashier', active: true },
+      { id: 'u1', username: 'admin', password: 'admin123', name: 'Administrator', role: 'administrator', active: true, permissions: ['*'] },
+      { id: 'u2', username: 'owner', password: 'owner123', name: 'Budi Santoso', role: 'owner', active: true, permissions: ['*'] },
+      { id: 'u3', username: 'manager', password: 'manager123', name: 'Siti Rahayu', role: 'manager', active: true, permissions: ['dashboard','pos','products','purchase','inventory','customer','transaction','reports'] },
+      { id: 'u4', username: 'kasir1', password: 'kasir123', name: 'Aldi Pratama', role: 'cashier', active: true, permissions: ['pos','pos-new','pos-held','pos-history'] },
     ],
     categories: [
       { id: 'cat1', name: 'Makanan', icon: 'fa-bowl-food', color: '#fed7aa' },
@@ -65,8 +65,15 @@ export default new Vuex.Store({
     ],
     customers: [
       { id:'c0',name:'Walk-in Customer',phone:'-',isMember:false },
-      { id:'c1',name:'Ahmad Hidayat',phone:'081234567890',memberCode:'MBR-001',points:150,isMember:true },
-      { id:'c2',name:'Rina Wulandari',phone:'082345678901',memberCode:'MBR-002',points:320,isMember:true },
+      { id:'c1',name:'Ahmad Hidayat',phone:'081234567890',memberCode:'MBR-001',points:150,totalSpent:1500000,isMember:true },
+      { id:'c2',name:'Rina Wulandari',phone:'082345678901',memberCode:'MBR-002',points:320,totalSpent:3200000,isMember:true },
+    ],
+    suppliers: [
+      { id:'s1',name:'PT Indofood Sukses Makmur',phone:'021-5795-8822',address:'Jakarta Selatan',active:true },
+      { id:'s2',name:'PT Danone Aqua Indonesia',phone:'021-5211-711',address:'Jakarta Pusat',active:true },
+      { id:'s3',name:'PT Coca Cola Indonesia',phone:'021-5366-3636',address:'Jakarta Barat',active:true },
+      { id:'s4',name:'PT Unilever Indonesia',phone:'021-5262-112',address:'Jakarta Selatan',active:true },
+      { id:'s5',name:'PT Nestle Indonesia',phone:'021-5367-888',address:'Jakarta Barat',active:true },
     ],
     paymentMethods: [
       { id:'pm1',name:'Tunai',icon:'fa-money-bill-wave',active:true },
@@ -167,6 +174,87 @@ export default new Vuex.Store({
         }
       })
     },
+    // Product mutations
+    ADD_PRODUCT(state, product) { state.products.push(product) },
+    UPDATE_PRODUCT(state, { id, data }) {
+      const idx = state.products.findIndex(p => p.id === id)
+      if (idx >= 0) state.products.splice(idx, 1, { ...state.products[idx], ...data })
+    },
+    DELETE_PRODUCT(state, id) { state.products = state.products.filter(p => p.id !== id) },
+    // Purchase mutations
+    ADD_PURCHASE_ORDER(state, po) {
+      state.purchaseOrders.unshift(po)
+      po.items.forEach(item => {
+        const product = state.products.find(p => p.id === item.product.id)
+        if (product) {
+          const prev = product.stock
+          product.stock += item.quantity
+          state.stockMutations.unshift({
+            id: 'SM-' + Date.now() + '-' + item.product.id,
+            productId: item.product.id,
+            productName: item.product.name,
+            type: 'in',
+            quantity: item.quantity,
+            previousStock: prev,
+            newStock: product.stock,
+            reference: po.poNumber,
+            reason: 'Pembelian dari ' + po.supplierName,
+            date: po.date,
+            createdBy: po.createdBy
+          })
+        }
+      })
+    },
+    ADD_SUPPLIER(state, supplier) { state.suppliers.push(supplier) },
+    // Customer mutations
+    ADD_CUSTOMER(state, customer) { state.customers.push(customer) },
+    // Expense mutations
+    ADD_EXPENSE(state, expense) { state.expenses.unshift(expense) },
+    // Stock mutations
+    ADJUST_STOCK(state, { productId, adjustment, reason }) {
+      const product = state.products.find(p => p.id === productId)
+      if (product) {
+        const prev = product.stock
+        product.stock += adjustment
+        state.stockMutations.unshift({
+          id: 'SM-' + Date.now(),
+          productId,
+          productName: product.name,
+          type: 'adjustment',
+          quantity: Math.abs(adjustment),
+          previousStock: prev,
+          newStock: product.stock,
+          reference: 'ADJ-' + Date.now(),
+          reason,
+          date: new Date().toISOString(),
+          createdBy: state.currentUser ? state.currentUser.name : 'System'
+        })
+      }
+    },
+    SAVE_OPNAME(state, items) {
+      items.forEach(item => {
+        const product = state.products.find(p => p.id === item.productId)
+        if (product) {
+          const prev = product.stock
+          product.stock = item.physicalStock
+          state.stockMutations.unshift({
+            id: 'SM-' + Date.now() + '-' + item.productId,
+            productId: item.productId,
+            productName: product.name,
+            type: 'opname',
+            quantity: Math.abs(item.difference),
+            previousStock: prev,
+            newStock: item.physicalStock,
+            reference: 'OPNAME-' + Date.now(),
+            reason: 'Stock Opname',
+            date: new Date().toISOString(),
+            createdBy: state.currentUser ? state.currentUser.name : 'System'
+          })
+        }
+      })
+    },
+    // Settings mutations
+    UPDATE_STORE_SETTINGS(state, settings) { Object.assign(state.storeSettings, settings) },
   },
   actions: {
     login({ commit, state }, credentials) {

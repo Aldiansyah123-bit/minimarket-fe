@@ -16,9 +16,17 @@ src/
 ├── views/                    # Vue Single File Components
 │   ├── LoginPage.vue        # Halaman login dengan 4 role
 │   ├── DashboardPage.vue    # Dashboard dengan statistik & grafik
-│   └── POSPage.vue          # Halaman kasir/POS lengkap
+│   ├── POSPage.vue          # Halaman kasir/POS lengkap
+│   ├── ProductsPage.vue     # Manajemen produk (CRUD)
+│   └── AllPages.vue         # Semua halaman lainnya:
+│                             #   - Pembelian (Baru, Riwayat, Supplier)
+│                             #   - Inventory (Stok, Mutasi, Adjustment, Opname)
+│                             #   - Customer (Semua, Member)
+│                             #   - Transaksi (Penjualan, Retur, Pengeluaran)
+│                             #   - Laporan (6 jenis laporan)
+│                             #   - Pengaturan (7 pengaturan)
 ├── App.vue                   # Root component Vue 2
-├── store.js                  # Vuex store configuration
+├── store.js                  # Vuex store configuration (lengkap)
 └── main.js                   # Vue app initialization
 
 index.html                    # Entry point (load main.js)
@@ -36,10 +44,10 @@ vite.config.js                # Vite config dengan plugin Vue 2
 | Manager | manager | manager123 | Dashboard, POS, Products, Purchase, Inventory, Customer, Transaction, Reports |
 | Kasir | kasir1 | kasir123 | POS only |
 
-## ✨ Fitur Utama
+## ✨ Fitur Utama (LENGKAP)
 
 ### 1. **Autentikasi & Otorisasi**
-- Login dengan 4 role berbeda
+- Login dengan 4 role berbeda (Administrator, Owner, Manager, Kasir)
 - Role-based access control
 - Session management
 
@@ -52,33 +60,79 @@ vite.config.js                # Vite config dengan plugin Vue 2
 
 ### 3. **POS / Kasir**
 - Pencarian produk (nama/barcode)
-- Filter berdasarkan kategori
+- Filter berdasarkan kategori (10 kategori)
 - Keranjang belanja
-- Kalkulasi PPN otomatis
+- Kalkulasi PPN otomatis (11%)
 - Proses pembayaran
 - Auto-update stok setelah transaksi
+- Cetak struk
 
 ### 4. **Manajemen Produk**
 - 20+ produk sample dengan berbagai kategori
-- Kategori: Makanan, Minuman, Snack, Sembako, dll
-- Brand: Indomie, Aqua, Coca Cola, dll
-- Unit: PCS, BOX, KG, L
+- CRUD produk lengkap (Tambah, Edit, Hapus)
+- Kategori: Makanan, Minuman, Snack, Sembako, Kebutuhan Rumah, dll
+- Brand: Indomie, Aqua, Coca Cola, Unilever, Nestle, dll
+- Unit: PCS, BOX, PACK, KG, L
+- Filter dan pencarian produk
+- Status aktif/nonaktif
 
-### 5. **Inventory Management**
-- Tracking stok real-time
-- Mutasi stok otomatis
+### 5. **Pembelian**
+- Pembelian baru dari supplier
+- Pilih supplier dan produk
+- Input qty dan harga beli
+- Auto-update stok setelah pembelian
+- Riwayat pembelian
+- Manajemen supplier (CRUD)
+
+### 6. **Inventory Management**
+- **Stok**: Tracking stok real-time dengan nilai stok
+- **Mutasi Stok**: Riwayat semua perubahan stok (masuk/keluar/adjustment/opname)
+- **Penyesuaian Stok**: Manual adjustment untuk barang rusak/hilang/kadaluarsa
+- **Stock Opname**: Pencocokan stok sistem dengan fisik
 - Peringatan stok minimum
 
-### 6. **Customer Management**
-- Walk-in customer
-- Member dengan poin
-- Riwayat transaksi
+### 7. **Customer Management**
+- **Semua Customer**: Daftar semua customer
+- **Member**: Customer dengan membership dan poin
+- CRUD customer
+- Tracking total belanja
 
-### 7. **Payment Methods**
+### 8. **Transaksi**
+- **Penjualan**: Riwayat semua transaksi penjualan
+- **Retur Penjualan**: Proses pengembalian barang
+- **Pengeluaran**: Catat pengeluaran operasional (CRUD)
+
+### 9. **Laporan**
+- **Laporan Penjualan**: Total sales, jumlah transaksi, rata-rata basket
+- **Laporan Produk**: Produk terlaris, omzet, profit per produk
+- **Laporan Pembelian**: Total pembelian, jumlah PO
+- **Laporan Stok**: Nilai stok, stok menipis
+- **Laporan Keuntungan**: Sales, COGS, Gross Profit, Expense, Net Profit
+- **Laporan Kas**: Cash sales, non-cash, expected cash
+
+### 10. **Pengaturan**
+- **Toko**: Nama, alamat, pajak
+- **Cabang**: Multi-cabang support
+- **User**: Manajemen user dan role
+- **Role & Permission**: Konfigurasi akses per role
+- **Metode Pembayaran**: Aktif/nonaktifkan metode bayar
+- **Printer**: Konfigurasi printer struk
+- **Struk**: Custom header/footer struk
+
+### 11. **Payment Methods**
 - Tunai
 - QRIS
 - Debit
 - E-Wallet
+- Transfer Bank
+
+### 12. **Fitur Tambahan**
+- Sidebar navigation dengan role-based menu
+- Responsive design
+- Real-time stock update
+- Auto-generate invoice number
+- Format Rupiah otomatis
+- Date formatting Indonesia
 
 ## 🎨 Komponen Vue
 
