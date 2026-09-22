@@ -1,89 +1,75 @@
-import React, { useState, useCallback } from 'react';
-import { Product, CartItem, Transaction, Page } from './types';
-import { products } from './data/products';
-import POSPage from './components/POSPage';
-import DashboardPage from './components/DashboardPage';
-import HistoryPage from './components/HistoryPage';
+import React from 'react';
+import { StoreProvider, useStore } from './context/StoreContext';
+import Layout from './components/layout/Layout';
+import LoginPage from './pages/auth/LoginPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import POSPage from './pages/pos/POSPage';
+import { HeldOrdersPage, SalesHistoryPage } from './pages/pos/HeldOrdersAndHistory';
+import { AllProductsPage, CategoriesPage, BrandsPage, UnitsPage, PricingPage } from './pages/products/ProductPages';
+import { NewPurchasePage, PurchaseHistoryPage, SuppliersPage } from './pages/purchase/PurchasePages';
+import { StockPage, StockMutationPage, StockAdjustmentPage, StockOpnamePage } from './pages/inventory/InventoryPages';
+import { AllCustomersPage, MembersPage, SalesTransactionPage, SalesReturnPage, ExpensesPage } from './pages/customer/CustomerAndTransactionPages';
+import { SalesReportPage, ProductReportPage, PurchaseReportPage, StockReportPage, ProfitReportPage, CashReportPage } from './pages/reports/ReportPages';
+import { StoreSettingsPage, BranchSettingsPage, UserSettingsPage, RolesPage, PaymentMethodSettingsPage, PrinterSettingsPage, ReceiptSettingsPage } from './pages/settings/SettingsPages';
 
-export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('pos');
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [productData, setProductData] = useState<Product[]>(products);
+function AppContent() {
+  const { currentUser, currentPage } = useStore();
 
-  const addTransaction = useCallback((transaction: Transaction) => {
-    setTransactions(prev => [transaction, ...prev]);
-    // Update stock
-    setProductData(prev =>
-      prev.map(p => {
-        const item = transaction.items.find(i => i.product.id === p.id);
-        if (item) {
-          return { ...p, stock: p.stock - item.quantity };
-        }
-        return p;
-      })
-    );
-  }, []);
+  if (!currentUser) {
+    return <LoginPage />;
+  }
 
-  const navItems = [
-    { id: 'pos' as Page, label: 'Kasir', icon: 'fa-cash-register' },
-    { id: 'dashboard' as Page, label: 'Dashboard', icon: 'fa-chart-line' },
-    { id: 'history' as Page, label: 'Riwayat', icon: 'fa-clock-rotate-left' },
-  ];
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'dashboard': return <DashboardPage />;
+      case 'pos-new': return <POSPage />;
+      case 'pos-held': return <HeldOrdersPage />;
+      case 'pos-history': return <SalesHistoryPage />;
+      case 'products-all': return <AllProductsPage />;
+      case 'products-categories': return <CategoriesPage />;
+      case 'products-brands': return <BrandsPage />;
+      case 'products-units': return <UnitsPage />;
+      case 'products-pricing': return <PricingPage />;
+      case 'purchase-new': return <NewPurchasePage />;
+      case 'purchase-history': return <PurchaseHistoryPage />;
+      case 'purchase-suppliers': return <SuppliersPage />;
+      case 'inventory-stock': return <StockPage />;
+      case 'inventory-mutation': return <StockMutationPage />;
+      case 'inventory-adjustment': return <StockAdjustmentPage />;
+      case 'inventory-opname': return <StockOpnamePage />;
+      case 'customer-all': return <AllCustomersPage />;
+      case 'customer-members': return <MembersPage />;
+      case 'transaction-sales': return <SalesTransactionPage />;
+      case 'transaction-return': return <SalesReturnPage />;
+      case 'transaction-expenses': return <ExpensesPage />;
+      case 'reports-sales': return <SalesReportPage />;
+      case 'reports-product': return <ProductReportPage />;
+      case 'reports-purchase': return <PurchaseReportPage />;
+      case 'reports-stock': return <StockReportPage />;
+      case 'reports-profit': return <ProfitReportPage />;
+      case 'reports-cash': return <CashReportPage />;
+      case 'settings-store': return <StoreSettingsPage />;
+      case 'settings-branch': return <BranchSettingsPage />;
+      case 'settings-users': return <UserSettingsPage />;
+      case 'settings-roles': return <RolesPage />;
+      case 'settings-payment': return <PaymentMethodSettingsPage />;
+      case 'settings-printer': return <PrinterSettingsPage />;
+      case 'settings-receipt': return <ReceiptSettingsPage />;
+      default: return <DashboardPage />;
+    }
+  };
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100 overflow-hidden">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-blue-700 to-blue-900 text-white shadow-lg">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-              <i className="fas fa-store text-xl"></i>
-            </div>
-            <div>
-              <h1 className="text-lg font-bold leading-tight">POS Minimarket</h1>
-              <p className="text-xs text-blue-200">Sistem Kasir Digital</p>
-            </div>
-          </div>
-          <nav className="flex gap-1">
-            {navItems.map(item => (
-              <button
-                key={item.id}
-                onClick={() => setCurrentPage(item.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                  currentPage === item.id
-                    ? 'bg-white text-blue-800 shadow-md'
-                    : 'text-white/80 hover:bg-white/10'
-                }`}
-              >
-                <i className={`fas ${item.icon}`}></i>
-                <span className="hidden sm:inline">{item.label}</span>
-              </button>
-            ))}
-          </nav>
-          <div className="flex items-center gap-3">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium">Kasir 01</p>
-              <p className="text-xs text-blue-200">{new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            </div>
-            <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center">
-              <i className="fas fa-user text-sm"></i>
-            </div>
-          </div>
-        </div>
-      </header>
+    <Layout>
+      {renderPage()}
+    </Layout>
+  );
+}
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-hidden">
-        {currentPage === 'pos' && (
-          <POSPage products={productData} onAddTransaction={addTransaction} />
-        )}
-        {currentPage === 'dashboard' && (
-          <DashboardPage transactions={transactions} products={productData} />
-        )}
-        {currentPage === 'history' && (
-          <HistoryPage transactions={transactions} />
-        )}
-      </main>
-    </div>
+export default function App() {
+  return (
+    <StoreProvider>
+      <AppContent />
+    </StoreProvider>
   );
 }
