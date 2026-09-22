@@ -1,6 +1,2 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App.tsx";
-
-ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
+// This file is intentionally minimal - Vue.js 2 handles all UI via CDN
+export {};
