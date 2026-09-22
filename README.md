@@ -1,31 +1,31 @@
-# POS Minimarket - Vue.js 2
+# POS Minimarket - Vue.js 2 (Murni)
 
-Aplikasi Point of Sale (POS) untuk minimarket yang dibangun menggunakan **Vue.js 2** dan **Vuex 3**.
+Aplikasi Point of Sale (POS) untuk minimarket yang dibangun **100% menggunakan Vue.js 2** dan **Vuex 3**. Tidak ada React sama sekali.
 
 ## 🚀 Teknologi
 
-- **Vue.js 2.7.16** - Framework JavaScript progresif
-- **Vuex 3.6.2** - State management pattern
+- **Vue.js 2.7.16** - Framework JavaScript progresif (bukan React!)
+- **Vuex 3.6.2** - State management pattern + library
 - **Font Awesome 6** - Icon library
-- **Vite** - Build tool
+- **Vite** - Build tool dengan plugin Vue 2
 
-## 📁 Struktur Folder
+## 📁 Struktur Folder (Vue.js 2 Murni)
 
 ```
 src/
-├── views/                    # Vue Single File Components (Referensi)
-│   ├── LoginPage.vue        # Halaman login
-│   ├── DashboardPage.vue    # Dashboard dengan statistik
-│   └── POSPage.vue          # Halaman kasir/POS
+├── views/                    # Vue Single File Components
+│   ├── LoginPage.vue        # Halaman login dengan 4 role
+│   ├── DashboardPage.vue    # Dashboard dengan statistik & grafik
+│   └── POSPage.vue          # Halaman kasir/POS lengkap
+├── App.vue                   # Root component Vue 2
 ├── store.js                  # Vuex store configuration
-├── main.js                   # Vue app initialization
-└── App.tsx                   # Empty (Vue handles UI)
+└── main.js                   # Vue app initialization
 
-public/
-└── app.js                    # Runtime Vue 2 app dengan template inline
-
-index.html                    # Entry point dengan Vue 2 CDN
+index.html                    # Entry point (load main.js)
+vite.config.js                # Vite config dengan plugin Vue 2
 ```
+
+**Catatan:** Tidak ada file React (.tsx, .jsx) sama sekali. Semua komponen menggunakan format Vue Single File Component (.vue).
 
 ## 🔐 Login Credentials
 
@@ -221,13 +221,15 @@ npm run preview
 
 ## 📝 Catatan Penting
 
-1. **File .vue sebagai Referensi**: File `.vue` di `src/views/` berfungsi sebagai referensi struktur komponen Vue SFC. Runtime menggunakan template inline di `app.js` karena keterbatasan build system.
+1. **Vue.js 2 Murni**: Aplikasi ini 100% menggunakan Vue.js 2 dengan Single File Components (.vue). Tidak ada React sama sekali.
 
-2. **Vue 2 via CDN**: Aplikasi menggunakan Vue 2.7.16 dan Vuex 3.6.2 via CDN untuk kompatibilitas maksimal.
+2. **Build System**: Menggunakan Vite dengan plugin `@vitejs/plugin-vue2` untuk compile file `.vue`.
 
-3. **Data Sample**: Semua data (produk, customer, dll) adalah sample untuk demonstrasi.
+3. **State Management**: Menggunakan Vuex 3.6.2 (versi yang kompatibel dengan Vue 2) untuk state management.
 
-4. **LocalStorage**: Saat ini data tidak persisten. Refresh halaman akan reset semua data.
+4. **Data Sample**: Semua data (produk, customer, dll) adalah sample untuk demonstrasi.
+
+5. **Data Persisten**: Saat ini data tidak persisten. Refresh halaman akan reset semua data.
 
 ## 🚧 Fitur yang Sedang Dikembangkan
 
@@ -249,4 +251,4 @@ MIT
 
 ---
 
-**Dibangun dengan ❤️ menggunakan Vue.js 2**
+**Dibangun dengan ❤️ menggunakan Vue.js 2 (100% Murni - Tanpa React)**
